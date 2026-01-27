@@ -1,3 +1,5 @@
 Data
 virtualEnv
 __pycache__
+generated_music.mid
+GAN_Loss_per_Epoch_final.png
