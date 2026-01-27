@@ -3,3 +3,6 @@ virtualEnv
 __pycache__
 generated_music.mid
 GAN_Loss_per_Epoch_final.png
+discriminator_model.h5
+gan_final.mid
+generator_model.h5
