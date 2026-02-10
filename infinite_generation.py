@@ -39,7 +39,7 @@ def get_notes():
     return notes
 
 
-def play_midi_stream(
+def play_midi_bytes(
     string_io_file,
     busy_wait_milliseconds=50,
     play_for_milliseconds=float("inf"),
@@ -76,17 +76,20 @@ if __name__ == "__main__":
 
     pygame.mixer.init(MIXER_FREQ, MIXER_BIT_SIZE, MIXER_CHANNELS, MIXER_BUFFER)
 
+    # Train a GAN on the midi files once
     gan = GAN()
     gan.train(notes=notes, n_vocab=n_vocab, batch_size=BATCH_SIZE)
 
     while True:
 
+        # Get a midi sequence from the generator
         generated_music = generate_music(
             gan.generator, LATENT_DIMENSION, notes, n_vocab
         )
-        midi_stream = create_midi(generated_music)
 
-        streamMidiFile = midi.translate.streamToMidiFile(midi_stream)
-        midi_bytes = BytesIO(streamMidiFile.writestr())
+        # Convert midi output to bytes
+        midi_stream = midi.translate.streamToMidiFile(create_midi(generated_music))
+        midi_bytes = BytesIO(midi_stream.writestr())
 
-        play_midi_stream(midi_bytes)
+        # play the output
+        play_midi_bytes(midi_bytes)
