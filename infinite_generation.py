@@ -1,7 +1,9 @@
+from pathlib import Path
+
+from music21 import chord, converter, note
+
 from create_generator_model import GAN
 from generate_music import generate_music
-from pathlib import Path
-from music21 import converter, note, chord
 
 LATENT_DIMENSION = 1000
 
