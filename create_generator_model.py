@@ -4,17 +4,25 @@ import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 from music21 import chord, converter, instrument, note, stream
-from tensorflow.keras.layers import (LSTM, BatchNormalization, Bidirectional,
-                                     Dense, Dropout, Input, LeakyReLU, Reshape)
+from tensorflow.keras.layers import (
+    LSTM,
+    BatchNormalization,
+    Bidirectional,
+    Dense,
+    Dropout,
+    Input,
+    LeakyReLU,
+    Reshape,
+)
 from tensorflow.keras.models import Model, Sequential
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.utils import to_categorical
 
 SEQUENCE_LENGTH = 100
 LATENT_DIMENSION = 1000
-BATCH_SIZE = 16
+BATCH_SIZE = 128
 EPOCHS = 100
-SAMPLE_INTERVAL = 1
+SAMPLE_INTERVAL = 50
 
 
 def get_notes():
@@ -106,7 +114,7 @@ def create_midi(prediction_output, filename):
 
 
 class GAN:
-    def __init__(self, rows):
+    def __init__(self, rows: int = SEQUENCE_LENGTH):
         self.seq_length = rows
         self.seq_shape = (self.seq_length, 1)
         self.latent_dim = 1000
@@ -181,7 +189,12 @@ class GAN:
 
         return Model(noise, seq)
 
-    def train(self, epochs, batch_size=128, sample_interval=50):
+    def train(
+        self,
+        epochs: int = EPOCHS,
+        batch_size: int = BATCH_SIZE,
+        sample_interval: int = SAMPLE_INTERVAL,
+    ):
 
         # Load and convert the data
         notes = get_notes()
