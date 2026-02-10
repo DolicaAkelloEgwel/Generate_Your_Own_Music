@@ -6,7 +6,7 @@ from tensorflow.keras.models import load_model
 instr = instrument.Violin()
 
 
-def create_midi(prediction_output, filename):
+def create_midi(prediction_output, filename=None):
     """convert the output from the prediction to notes and create a midi file
     from the notes"""
     offset = 0
@@ -36,8 +36,8 @@ def create_midi(prediction_output, filename):
         # increase offset each iteration so that notes do not stack
         offset += 0.5
 
-    midi_stream = stream.Stream(output_notes)
-    midi_stream.write("midi", fp="{}.mid".format(filename))
+    return stream.Stream(output_notes)
+    # midi_stream.write("midi", fp="{}.mid".format(filename))
 
 
 def generate_music(generator_model, latent_dim, notes, n_vocab, length=500):
