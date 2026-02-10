@@ -10,3 +10,9 @@ dependencies = [
     "pygame>=2.6.1",
     "tensorflow>=2.20.0",
 ]
+
+[dependency-groups]
+dev = [
+    "black>=26.1.0",
+    "isort>=7.0.0",
+]
