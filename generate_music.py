@@ -3,8 +3,6 @@ import tensorflow as tf
 from music21 import chord, instrument, note, stream
 from tensorflow.keras.models import load_model
 
-from create_generator_model import LATENT_DIMENSION, get_notes
-
 instr = instrument.Violin()
 
 
@@ -42,7 +40,7 @@ def create_midi(prediction_output, filename):
     midi_stream.write("midi", fp="{}.mid".format(filename))
 
 
-def generate_music(generator_model, latent_dim, n_vocab, length=500):
+def generate_music(generator_model, latent_dim, notes, n_vocab, length=500):
     """Generate new music using the trained generator model"""
     # Create random noise as input to the generator
     noise = np.random.normal(0, 1, (1, latent_dim))

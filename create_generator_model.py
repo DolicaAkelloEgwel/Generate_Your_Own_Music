@@ -4,16 +4,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 from music21 import chord, converter, instrument, note, stream
-from tensorflow.keras.layers import (
-    LSTM,
-    BatchNormalization,
-    Bidirectional,
-    Dense,
-    Dropout,
-    Input,
-    LeakyReLU,
-    Reshape,
-)
+from tensorflow.keras.layers import (LSTM, BatchNormalization, Bidirectional,
+                                     Dense, Dropout, Input, LeakyReLU, Reshape)
 from tensorflow.keras.models import Model, Sequential
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.utils import to_categorical
@@ -23,26 +15,6 @@ LATENT_DIMENSION = 1000
 BATCH_SIZE = 128
 EPOCHS = 100
 SAMPLE_INTERVAL = 50
-
-
-def get_notes():
-    """Get all the notes and chords from the midi files"""
-    notes = []
-
-    for file in Path("input").glob("*.mid"):
-        midi = converter.parse(file)
-
-        print("Parsing %s" % file)
-
-        notes_to_parse = midi.flat.notes
-
-        for element in notes_to_parse:
-            if isinstance(element, note.Note):
-                notes.append(str(element.pitch))
-            elif isinstance(element, chord.Chord):
-                notes.append(".".join(str(n) for n in element.normalOrder))
-
-    return notes
 
 
 def prepare_sequences(notes, n_vocab):
@@ -191,14 +163,14 @@ class GAN:
 
     def train(
         self,
+        notes,
+        n_vocab,
         epochs: int = EPOCHS,
         batch_size: int = BATCH_SIZE,
         sample_interval: int = SAMPLE_INTERVAL,
     ):
 
         # Load and convert the data
-        notes = get_notes()
-        n_vocab = len(set(notes))
         X_train, y_train = prepare_sequences(notes, n_vocab)
 
         # Adversarial ground truths
@@ -243,9 +215,8 @@ class GAN:
         self.generate(notes)
         self.plot_loss()
 
-    def generate(self, input_notes):
+    def generate(self, notes):
         # Get pitch names and store in a dictionary
-        notes = input_notes
         pitchnames = sorted(set(item for item in notes))
         int_to_note = dict((number, note) for number, note in enumerate(pitchnames))
 
