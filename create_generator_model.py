@@ -21,7 +21,7 @@ def get_notes():
     """Get all the notes and chords from the midi files"""
     notes = []
 
-    for file in Path("archive").glob("*.mid"):
+    for file in Path("input").glob("*.mid"):
         midi = converter.parse(file)
 
         print("Parsing %s" % file)
