@@ -9,12 +9,21 @@ from generate_music import create_midi, generate_music
 
 LATENT_DIMENSION = 1000
 
+MIXER_FREQ = 44100
+MIXER_BIT_SIZE = -16
+MIXER_CHANNELS = 2
+MIXER_BUFFER = 1024
+
+BATCH_SIZE = 24
+
+INPUT_PATH = "input"
+
 
 def get_notes():
     """Get all the notes and chords from the midi files"""
     notes = []
 
-    for file in Path("input").glob("*.mid"):
+    for file in Path(INPUT_PATH).glob("*.mid"):
         midi = converter.parse(file)
 
         print("Parsing %s" % file)
@@ -31,15 +40,15 @@ def get_notes():
 
 
 def play_midi_stream(
-    stringIOFile,
-    busyWaitMilliseconds=50,
-    playForMilliseconds=float("inf"),
+    string_io_file,
+    busy_wait_milliseconds=50,
+    play_for_milliseconds=float("inf"),
     blocked=True,
 ):
 
-    pygameClock = pygame.time.Clock()
+    pygame_clock = pygame.time.Clock()
     try:
-        pygame.mixer.music.load(stringIOFile)
+        pygame.mixer.music.load(string_io_file)
     except Exception as e:
         print(e, "Couldn't open file...")
         exit()
@@ -49,15 +58,15 @@ def play_midi_stream(
         return
 
     framerate = int(
-        1000 / busyWaitMilliseconds
+        1000 / busy_wait_milliseconds
     )  # coerce into int even if given a float.
     start_time = pygame.time.get_ticks()
 
     while pygame.mixer.music.get_busy():
-        if pygame.time.get_ticks() - start_time > playForMilliseconds:
+        if pygame.time.get_ticks() - start_time > play_for_milliseconds:
             pygame.mixer.music.stop()
             break
-        pygameClock.tick(framerate)
+        pygame_clock.tick(framerate)
 
 
 if __name__ == "__main__":
@@ -65,15 +74,10 @@ if __name__ == "__main__":
     notes = get_notes()
     n_vocab = len(set(notes))
 
-    mixerFreq: int = 44100
-    mixerBitSize: int = -16
-    mixerChannels: int = 2
-    mixerBuffer: int = 1024
-
-    pygame.mixer.init(mixerFreq, mixerBitSize, mixerChannels, mixerBuffer)
+    pygame.mixer.init(MIXER_FREQ, MIXER_BIT_SIZE, MIXER_CHANNELS, MIXER_BUFFER)
 
     gan = GAN()
-    gan.train(notes=notes, n_vocab=n_vocab, batch_size=24)
+    gan.train(notes=notes, n_vocab=n_vocab, batch_size=BATCH_SIZE)
 
     while True:
 
