@@ -4,7 +4,7 @@ from pathlib import Path
 import pygame
 from music21 import chord, converter, midi, note
 
-from trainer.create_generator_model import GAN
+from trainer.train_generator import GAN
 from trainer.generate_music import create_midi, generate_music
 
 LATENT_DIMENSION = 1000
