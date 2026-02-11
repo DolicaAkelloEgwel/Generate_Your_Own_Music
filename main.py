@@ -1,5 +1,6 @@
 from io import BytesIO
 from pathlib import Path
+import argparse
 
 from music21 import midi
 from pygame import mixer
@@ -18,6 +19,10 @@ MIXER_BUFFER = 1024
 BATCH_SIZE = 24
 
 INPUT_PATH = "input"
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--infinite")
+parser.add_argument("--save")
 
 notes = get_notes(INPUT_PATH)
 n_vocab = len(set(notes))
