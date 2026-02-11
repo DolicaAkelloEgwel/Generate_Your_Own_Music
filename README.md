@@ -2,18 +2,7 @@
 
 This repository contains code for generating new music using Generative Adversarial Networks (GANs). GANs are a type of deep learning model that can learn to generate new data that resembles the training data. In this case, we use GANs to generate music sequences based on existing MIDI files.
 
-## Files in the Repository
-
-- `create_generator_model.py`: This script contains the implementation of a GAN for generating music. It defines the generator and discriminator models, trains the GAN, and saves the trained models.
-- `play_midi.py`: A script to play the generated MIDI file and hear the music.
-
 ## How to Use
-
-1. **Training the GAN**: If you want to train the GAN on your own MIDI dataset, run the `create_generator_model.py` script. This script will parse the MIDI files in the `archive` folder, preprocess the data, and train the GAN to generate new music. After training, the generator and discriminator models will be saved in `generator_model.h5` and `discriminator_model.h5`, respectively.
-
-2. **Generate New Music**: To generate new music using the trained generator model, run the `generate_music.py` script. This script loads the generator model, generates random noise as input, and generates a new music sequence. The resulting music sequence will be saved as `gan_final.mid`.
-
-3. **Play the Generated Music**: To listen to the generated music, run the `play_midi.py` script. This script will play the `gan_final.mid` file and allow you to hear the music.
 
 ## Dependencies
 
