@@ -3,7 +3,7 @@ from pathlib import Path
 from music21 import chord, converter, note
 
 
-def get_notes(path: str = "input"):
+def get_notes(path: str):
     """Get all the notes and chords from the midi files"""
     notes = []
 
