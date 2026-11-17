@@ -19,9 +19,6 @@ dev = [
 channels = ["conda-forge"]
 platforms = ["win-64", "linux-64"]
 
-[tool.pixi.pypi-dependencies]
-generate-your-own-music = { path = ".", editable = true }
-
 [tool.pixi.environments]
 default = { solve-group = "default" }
 
