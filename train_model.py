@@ -44,40 +44,6 @@ args.add_argument(
 args = args.parse_args()
 
 
-def prepare_sequences(notes, n_vocab):
-    """Prepare the sequences used by the Neural Network"""
-    sequence_length = 100
-
-    # Get all pitch names
-    pitchnames = sorted(set(notes))
-
-    # Create a dictionary to map pitches to integers
-    note_to_int = {note: number for number, note in enumerate(pitchnames)}
-
-    network_input = []
-    network_output = []
-
-    # create input sequences and the corresponding outputs
-    for i in range(0, len(notes) - sequence_length, 1):
-        sequence_in = notes[i : i + sequence_length]
-        sequence_out = notes[i + sequence_length]
-        network_input.append([note_to_int[char] for char in sequence_in])
-        network_output.append(note_to_int[sequence_out])
-
-    n_patterns = len(network_input)
-
-    # Reshape the input into a format compatible with LSTM layers
-    network_input = np.reshape(network_input, (n_patterns, sequence_length, 1))
-
-    # Normalize input between -1 and 1
-    network_input = (network_input - float(n_vocab) / 2) / (float(n_vocab) / 2)
-    network_output = to_categorical(
-        network_output, num_classes=n_vocab
-    )  # Use to_categorical from TensorFlow's Keras
-
-    return network_input, network_output  # Add this return statement
-
-
 def create_midi(prediction_output, filename):
     """convert the output from the prediction to notes and create a midi file
     from the notes"""
@@ -120,6 +86,10 @@ class GAN:
         self.disc_loss = []
         self.gen_loss = []
         self.input_path = input_path
+
+        self.notes = get_notes(self.input_path)
+        self.pitch_names = set(self.notes)
+        self.n_vocab = len(self.pitch_names)
 
         optimizer = Adam(0.0002, 0.5)
 
@@ -192,9 +162,7 @@ class GAN:
     def train(self, epochs, batch_size=128, sample_interval=50):
 
         # Load and convert the data
-        notes = get_notes(self.input_path)
-        n_vocab = len(set(notes))
-        X_train, _ = prepare_sequences(notes, n_vocab)
+        X_train, _ = self.prepare_sequences()
 
         # Adversarial ground truths
         real = np.ones((batch_size, 1))
@@ -233,15 +201,12 @@ class GAN:
                 self.disc_loss.append(d_loss[0])
                 self.gen_loss.append(g_loss)
 
-        self.generate(notes)
+        self.generate()
         self.plot_loss()
 
-        return n_vocab
-
-    def generate(self, notes):
+    def generate(self):
         # Get pitch names and store in a dictionary
-        pitchnames = sorted(set(notes))
-        int_to_note = {number: note for number, note in enumerate(pitchnames)}
+        int_to_note = {number: note for number, note in enumerate(self.pitch_names)}
 
         # Use random noise to generate sequences
         noise = np.random.normal(0, 1, (1, self.latent_dim))
@@ -261,6 +226,37 @@ class GAN:
 
         create_midi(pred_notes_mapped, "gan_final")
 
+    def prepare_sequences(self):
+
+        """Prepare the sequences used by the Neural Network"""
+        sequence_length = 100
+
+        # Create a dictionary to map pitches to integers
+        note_to_int = {note: number for number, note in enumerate(self.pitch_names)}
+
+        network_input = []
+        network_output = []
+
+        # create input sequences and the corresponding outputs
+        for i in range(0, len(self.notes) - sequence_length, 1):
+            sequence_in = self.notes[i : i + sequence_length]
+            sequence_out = self.notes[i + sequence_length]
+            network_input.append([note_to_int[char] for char in sequence_in])
+            network_output.append(note_to_int[sequence_out])
+
+        n_patterns = len(network_input)
+
+        # Reshape the input into a format compatible with LSTM layers
+        network_input = np.reshape(network_input, (n_patterns, sequence_length, 1))
+
+        # Normalize input between -1 and 1
+        network_input = (network_input - float(self.n_vocab) / 2) / (float(self.n_vocab) / 2)
+        network_output = to_categorical(
+            network_output, num_classes=self.n_vocab
+        )  # Use to_categorical from TensorFlow's Keras
+
+        return network_input, network_output
+
     def plot_loss(self):
         plt.plot(self.disc_loss, c="red")
         plt.plot(self.gen_loss, c="blue")
@@ -273,11 +269,11 @@ class GAN:
 
 
 gan = GAN(rows=SEQUENCE_LENGTH, input_path=args.input)
-n_vocab = gan.train(epochs=EPOCHS, batch_size=BATCH_SIZE, sample_interval=SAMPLE_INTERVAL)
+gan.train(epochs=EPOCHS, batch_size=BATCH_SIZE, sample_interval=SAMPLE_INTERVAL)
 
 # Save the generator and discriminator models
 gan.generator.save(f"{args.output}/generator.h5")
 gan.discriminator.save(f"{args.output}/discriminator.h5")
 
 with open(f"{args.output}/meta.json", "w") as f:
-    f.write(json.dumps({"n-vocab": n_vocab}))
+    f.write(json.dumps({"n-vocab": gan.n_vocab, "pitch-names": list(gan.pitch_names)}))

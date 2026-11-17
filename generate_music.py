@@ -4,6 +4,19 @@ from tensorflow.keras.models import load_model
 
 from constants import LATENT_DIMENSION
 from helpers import get_notes
+import argparse
+import json
+
+args = argparse.ArgumentParser()
+
+args.add_argument(
+    "-m",
+    "--model",
+    required=True,
+    help="path to the folder containing the model files produced from the training",
+)
+
+args = args.parse_args()
 
 instr = instrument.Violin()
 
@@ -42,7 +55,7 @@ def create_midi(prediction_output, filename):
     midi_stream.write("midi", fp=f"{filename}.mid")
 
 
-def generate_music(generator_model, latent_dim, n_vocab, length=500):
+def generate_music(generator_model, latent_dim, n_vocab, pitch_names, length=500):
     """Generate new music using the trained generator model"""
     # Create random noise as input to the generator
     noise = np.random.normal(0, 1, (1, latent_dim))
@@ -52,23 +65,24 @@ def generate_music(generator_model, latent_dim, n_vocab, length=500):
     pred_notes = [x * (n_vocab / 2) + (n_vocab / 2) for x in predictions[0]]
 
     # Map generated integer indices to note names
-    pitchnames = sorted(set(notes))
-    int_to_note = {number: note for number, note in enumerate(pitchnames)}
+    int_to_note = {number: note for number, note in enumerate(pitch_names)}
     pred_notes_mapped = [int_to_note[int(x)] for x in pred_notes]
 
     return pred_notes_mapped[:length]
 
 
-if __name__ == "__main__":
-    # Load the trained generator model
-    generator_model = load_model("generator_model.h5")
+# Load the trained generator model
+generator_model = load_model(f"{args.model}/generator.h5")
 
-    # Load the processed notes and get the number of unique pitches
-    notes = get_notes()
-    n_vocab = len(set(notes))
+# Load the processed notes and get the number of unique pitches
+with open(f"{args.model}/meta.json", "r") as f:
+    data = json.load(f)
+    
+n_vocab = data["n-vocab"]
+pitch_names = set(data["pitch-names"])
 
-    # Generate new music sequence
-    generated_music = generate_music(generator_model, LATENT_DIMENSION, n_vocab)
+# Generate new music sequence
+generated_music = generate_music(generator_model, LATENT_DIMENSION, n_vocab, pitch_names)
 
-    # Create a MIDI file from the generated music
-    create_midi(generated_music, "generated_music")
+# Create a MIDI file from the generated music
+create_midi(generated_music, "generated_music")
