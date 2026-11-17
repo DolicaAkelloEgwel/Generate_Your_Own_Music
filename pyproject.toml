@@ -9,25 +9,13 @@ dependencies = [
     "keras>=2.10.0,<3",
 ]
 
-[dependency-groups]
-dev = [
-    "black>=26.1.0",
-    "isort>=7.0.0",
-]
-
 [tool.pixi.workspace]
 channels = ["conda-forge"]
 platforms = ["win-64", "linux-64"]
 
 [tool.pixi.environments]
 default = { solve-group = "default" }
-
-[tool.pixi.environments.dev]
-features = ["dev"]
-solve-group = "default"
-
-[tool.pixi.environments.dev.dependencies]
-pre-commit = ">=4.6.2,<5"
+dev = { features = ["dev"], solve-group = "default" }
 
 [tool.pixi.tasks]
 
@@ -37,3 +25,6 @@ music21 = ">=9.9.2,<10"
 numpy = "<2"
 cudatoolkit = "11.2.*"
 cudnn = "8.1.0.*"
+
+[tool.pixi.feature.dev.dependencies]
+pre-commit = ">=4.6.2,<5"
