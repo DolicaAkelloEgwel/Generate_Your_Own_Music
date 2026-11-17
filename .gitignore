@@ -10,3 +10,4 @@ generator_model.h5
 .pixi/*
 !.pixi/config.toml
 /generate_your_own_music.egg-info
+/models
