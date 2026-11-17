@@ -1,3 +1,6 @@
+import argparse
+import json
+
 import matplotlib.pyplot as plt
 import numpy as np
 from music21 import chord, instrument, note, stream
@@ -22,8 +25,6 @@ from constants import (
     SEQUENCE_LENGTH,
 )
 from helpers import get_notes
-import argparse
-import json
 
 args = argparse.ArgumentParser()
 
@@ -227,7 +228,6 @@ class GAN:
         create_midi(pred_notes_mapped, "gan_final")
 
     def prepare_sequences(self):
-
         """Prepare the sequences used by the Neural Network"""
         sequence_length = 100
 
@@ -250,7 +250,9 @@ class GAN:
         network_input = np.reshape(network_input, (n_patterns, sequence_length, 1))
 
         # Normalize input between -1 and 1
-        network_input = (network_input - float(self.n_vocab) / 2) / (float(self.n_vocab) / 2)
+        network_input = (network_input - float(self.n_vocab) / 2) / (
+            float(self.n_vocab) / 2
+        )
         network_output = to_categorical(
             network_output, num_classes=self.n_vocab
         )  # Use to_categorical from TensorFlow's Keras

@@ -1,11 +1,11 @@
+import argparse
+import json
+
 import numpy as np
 from music21 import chord, instrument, note, stream
 from tensorflow.keras.models import load_model
 
 from constants import LATENT_DIMENSION
-from helpers import get_notes
-import argparse
-import json
 
 args = argparse.ArgumentParser()
 
@@ -77,12 +77,14 @@ generator_model = load_model(f"{args.model}/generator.h5")
 # Load the processed notes and get the number of unique pitches
 with open(f"{args.model}/meta.json", "r") as f:
     data = json.load(f)
-    
+
 n_vocab = data["n-vocab"]
 pitch_names = set(data["pitch-names"])
 
 # Generate new music sequence
-generated_music = generate_music(generator_model, LATENT_DIMENSION, n_vocab, pitch_names)
+generated_music = generate_music(
+    generator_model, LATENT_DIMENSION, n_vocab, pitch_names
+)
 
 # Create a MIDI file from the generated music
 create_midi(generated_music, "generated_music")
