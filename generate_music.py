@@ -2,7 +2,8 @@ import numpy as np
 from music21 import chord, instrument, note, stream
 from tensorflow.keras.models import load_model
 
-from create_generator_model import LATENT_DIMENSION, get_notes
+from create_generator_model import LATENT_DIMENSION
+from helpers import get_notes
 
 instr = instrument.Violin()
 

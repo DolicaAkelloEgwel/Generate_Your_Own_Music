@@ -1,8 +1,6 @@
-from pathlib import Path
-
 import matplotlib.pyplot as plt
 import numpy as np
-from music21 import chord, converter, instrument, note, stream
+from music21 import chord, instrument, note, stream
 from tensorflow.keras.layers import (
     LSTM,
     BatchNormalization,
@@ -17,31 +15,13 @@ from tensorflow.keras.models import Model, Sequential
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.utils import to_categorical
 
+from helpers import get_notes
+
 SEQUENCE_LENGTH = 100
 LATENT_DIMENSION = 1000
 BATCH_SIZE = 16
 EPOCHS = 100
 SAMPLE_INTERVAL = 1
-
-
-def get_notes(path: str = "input"):
-    """Get all the notes and chords from the midi files"""
-    notes = []
-
-    for file in Path(path).glob("*.mid"):
-        midi = converter.parse(file)
-
-        print(f"Parsing {file}")
-
-        notes_to_parse = midi.flat.notes
-
-        for element in notes_to_parse:
-            if isinstance(element, note.Note):
-                notes.append(str(element.pitch))
-            elif isinstance(element, chord.Chord):
-                notes.append(".".join(str(n) for n in element.normalOrder))
-
-    return notes
 
 
 def prepare_sequences(notes, n_vocab):
