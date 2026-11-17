@@ -6,3 +6,7 @@ GAN_Loss_per_Epoch_final.png
 discriminator_model.h5
 gan_final.mid
 generator_model.h5
+# pixi environments
+.pixi/*
+!.pixi/config.toml
+/generate_your_own_music.egg-info
