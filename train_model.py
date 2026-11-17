@@ -22,6 +22,18 @@ from constants import (
     SEQUENCE_LENGTH,
 )
 from helpers import get_notes
+import argparse
+
+args = argparse.ArgumentParser()
+
+args.add_argument(
+    "-i",
+    "--input",
+    required=True,
+    help="path to the folder containing the midi files used for training",
+)
+
+args = args.parse_args()
 
 
 def prepare_sequences(notes, n_vocab):
@@ -93,12 +105,13 @@ def create_midi(prediction_output, filename):
 
 
 class GAN:
-    def __init__(self, rows):
+    def __init__(self, rows: int, input_path: str):
         self.seq_length = rows
         self.seq_shape = (self.seq_length, 1)
         self.latent_dim = 1000
         self.disc_loss = []
         self.gen_loss = []
+        self.input_path = input_path
 
         optimizer = Adam(0.0002, 0.5)
 
@@ -171,7 +184,7 @@ class GAN:
     def train(self, epochs, batch_size=128, sample_interval=50):
 
         # Load and convert the data
-        notes = get_notes()
+        notes = get_notes(self.input_path)
         n_vocab = len(set(notes))
         X_train, _ = prepare_sequences(notes, n_vocab)
 
@@ -249,10 +262,9 @@ class GAN:
         plt.close()
 
 
-if __name__ == "__main__":
-    gan = GAN(rows=SEQUENCE_LENGTH)
-    gan.train(epochs=EPOCHS, batch_size=BATCH_SIZE, sample_interval=SAMPLE_INTERVAL)
+gan = GAN(rows=SEQUENCE_LENGTH, input_path=args.input)
+gan.train(epochs=EPOCHS, batch_size=BATCH_SIZE, sample_interval=SAMPLE_INTERVAL)
 
-    # Save the generator and discriminator models
-    gan.generator.save("generator_model.h5")
-    gan.discriminator.save("discriminator_model.h5")
+# Save the generator and discriminator models
+gan.generator.save("models/generator.h5")
+gan.discriminator.save("models/discriminator.h5")
