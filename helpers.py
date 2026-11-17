@@ -9,10 +9,9 @@ def get_notes(path: str = "input"):
 
     for file in Path(path).glob("*.mid"):
         midi = converter.parse(file)
-
         print(f"Parsing {file}")
 
-        notes_to_parse = midi.flat.notesq
+        notes_to_parse = midi.flat.notes
 
         for element in notes_to_parse:
             if isinstance(element, note.Note):
