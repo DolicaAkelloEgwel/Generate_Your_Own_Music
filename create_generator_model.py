@@ -15,10 +15,13 @@ from tensorflow.keras.models import Model, Sequential
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.utils import to_categorical
 
+from constants import (
+    BATCH_SIZE,
+    EPOCHS,
+    SAMPLE_INTERVAL,
+    SEQUENCE_LENGTH,
+)
 from helpers import get_notes
-from constants import SEQUENCE_LENGTH, LATENT_DIMENSION, BATCH_SIZE, EPOCHS, SAMPLE_INTERVAL
-
-
 
 
 def prepare_sequences(notes, n_vocab):
