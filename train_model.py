@@ -23,6 +23,7 @@ from constants import (
 )
 from helpers import get_notes
 import argparse
+import json
 
 args = argparse.ArgumentParser()
 
@@ -31,6 +32,13 @@ args.add_argument(
     "--input",
     required=True,
     help="path to the folder containing the midi files used for training",
+)
+
+args.add_argument(
+    "-o",
+    "--output",
+    required=True,
+    help="output path for the model files and metadata",
 )
 
 args = args.parse_args()
@@ -228,6 +236,8 @@ class GAN:
         self.generate(notes)
         self.plot_loss()
 
+        return n_vocab
+
     def generate(self, notes):
         # Get pitch names and store in a dictionary
         pitchnames = sorted(set(notes))
@@ -263,8 +273,11 @@ class GAN:
 
 
 gan = GAN(rows=SEQUENCE_LENGTH, input_path=args.input)
-gan.train(epochs=EPOCHS, batch_size=BATCH_SIZE, sample_interval=SAMPLE_INTERVAL)
+n_vocab = gan.train(epochs=EPOCHS, batch_size=BATCH_SIZE, sample_interval=SAMPLE_INTERVAL)
 
 # Save the generator and discriminator models
-gan.generator.save("models/generator.h5")
-gan.discriminator.save("models/discriminator.h5")
+gan.generator.save(f"{args.output}/generator.h5")
+gan.discriminator.save(f"{args.output}/discriminator.h5")
+
+with open(f"{args.output}/meta.json", "w") as f:
+    f.write(json.dumps({"n-vocab": n_vocab}))
