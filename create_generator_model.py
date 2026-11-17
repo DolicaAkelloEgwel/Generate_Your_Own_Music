@@ -16,12 +16,9 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.utils import to_categorical
 
 from helpers import get_notes
+from constants import SEQUENCE_LENGTH, LATENT_DIMENSION, BATCH_SIZE, EPOCHS, SAMPLE_INTERVAL
 
-SEQUENCE_LENGTH = 100
-LATENT_DIMENSION = 1000
-BATCH_SIZE = 16
-EPOCHS = 100
-SAMPLE_INTERVAL = 1
+
 
 
 def prepare_sequences(notes, n_vocab):
