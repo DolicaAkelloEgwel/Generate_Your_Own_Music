@@ -11,7 +11,7 @@ args = argparse.ArgumentParser()
 
 args.add_argument(
     "-m",
-    "--model",
+    "--models",
     required=True,
     help="path to the folder containing the model files produced from the training",
 )
