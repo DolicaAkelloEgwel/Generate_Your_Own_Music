@@ -1,5 +1,4 @@
 import numpy as np
-import tensorflow as tf
 from music21 import chord, instrument, note, stream
 from tensorflow.keras.models import load_model
 
@@ -39,7 +38,7 @@ def create_midi(prediction_output, filename):
         offset += 0.5
 
     midi_stream = stream.Stream(output_notes)
-    midi_stream.write("midi", fp="{}.mid".format(filename))
+    midi_stream.write("midi", fp=f"{filename}.mid")
 
 
 def generate_music(generator_model, latent_dim, n_vocab, length=500):
@@ -52,8 +51,8 @@ def generate_music(generator_model, latent_dim, n_vocab, length=500):
     pred_notes = [x * (n_vocab / 2) + (n_vocab / 2) for x in predictions[0]]
 
     # Map generated integer indices to note names
-    pitchnames = sorted(set(item for item in notes))
-    int_to_note = dict((number, note) for number, note in enumerate(pitchnames))
+    pitchnames = sorted(set(notes))
+    int_to_note = {number: note for number, note in enumerate(pitchnames)}
     pred_notes_mapped = [int_to_note[int(x)] for x in pred_notes]
 
     return pred_notes_mapped[:length]
