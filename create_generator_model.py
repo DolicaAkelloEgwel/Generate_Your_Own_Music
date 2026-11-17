@@ -227,7 +227,7 @@ class GAN:
             # Print the progress and save into loss lists
             if epoch % sample_interval == 0:
                 print(
-                    f"{epoch} [D loss: {d_loss[0]}, acc.:{100 * d_loss[1]:.2f}] [G loss: {g_loss}]"
+                    f"{epoch} [D loss: {d_loss[0]:.6f}, acc.:{100 * d_loss[1]:.2f}%] [G loss: {g_loss:.6f}]"
                 )
                 self.disc_loss.append(d_loss[0])
                 self.gen_loss.append(g_loss)
