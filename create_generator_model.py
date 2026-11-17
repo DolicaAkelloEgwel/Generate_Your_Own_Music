@@ -2,10 +2,17 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
-import tensorflow as tf
 from music21 import chord, converter, instrument, note, stream
-from tensorflow.keras.layers import (LSTM, BatchNormalization, Bidirectional,
-                                     Dense, Dropout, Input, LeakyReLU, Reshape)
+from tensorflow.keras.layers import (
+    LSTM,
+    BatchNormalization,
+    Bidirectional,
+    Dense,
+    Dropout,
+    Input,
+    LeakyReLU,
+    Reshape,
+)
 from tensorflow.keras.models import Model, Sequential
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.utils import to_categorical
@@ -17,14 +24,14 @@ EPOCHS = 100
 SAMPLE_INTERVAL = 1
 
 
-def get_notes():
+def get_notes(path: str = "input"):
     """Get all the notes and chords from the midi files"""
     notes = []
 
-    for file in Path("input").glob("*.mid"):
+    for file in Path(path).glob("*.mid"):
         midi = converter.parse(file)
 
-        print("Parsing %s" % file)
+        print(f"Parsing {file}")
 
         notes_to_parse = midi.flat.notes
 
@@ -42,10 +49,10 @@ def prepare_sequences(notes, n_vocab):
     sequence_length = 100
 
     # Get all pitch names
-    pitchnames = sorted(set(item for item in notes))
+    pitchnames = sorted(set(notes))
 
     # Create a dictionary to map pitches to integers
-    note_to_int = dict((note, number) for number, note in enumerate(pitchnames))
+    note_to_int = {note: number for number, note in enumerate(pitchnames)}
 
     network_input = []
     network_output = []
@@ -102,7 +109,7 @@ def create_midi(prediction_output, filename):
         offset += 0.5
 
     midi_stream = stream.Stream(output_notes)
-    midi_stream.write("midi", fp="{}.mid".format(filename))
+    midi_stream.write("midi", fp=f"{filename}.mid")
 
 
 class GAN:
@@ -186,7 +193,7 @@ class GAN:
         # Load and convert the data
         notes = get_notes()
         n_vocab = len(set(notes))
-        X_train, y_train = prepare_sequences(notes, n_vocab)
+        X_train, _ = prepare_sequences(notes, n_vocab)
 
         # Adversarial ground truths
         real = np.ones((batch_size, 1))
@@ -194,7 +201,6 @@ class GAN:
 
         # Training the model
         for epoch in range(epochs):
-
             # Training the discriminator
             # Select a random batch of note sequences
             idx = np.random.randint(0, X_train.shape[0], batch_size)
@@ -221,8 +227,7 @@ class GAN:
             # Print the progress and save into loss lists
             if epoch % sample_interval == 0:
                 print(
-                    "%d [D loss: %f, acc.: %.2f%%] [G loss: %f]"
-                    % (epoch, d_loss[0], 100 * d_loss[1], g_loss)
+                    f"{epoch} [D loss: {d_loss[0]}, acc.:{100 * d_loss[1]:.2f}] [G loss: {g_loss}]"
                 )
                 self.disc_loss.append(d_loss[0])
                 self.gen_loss.append(g_loss)
@@ -230,11 +235,10 @@ class GAN:
         self.generate(notes)
         self.plot_loss()
 
-    def generate(self, input_notes):
+    def generate(self, notes):
         # Get pitch names and store in a dictionary
-        notes = input_notes
-        pitchnames = sorted(set(item for item in notes))
-        int_to_note = dict((number, note) for number, note in enumerate(pitchnames))
+        pitchnames = sorted(set(notes))
+        int_to_note = {number: note for number, note in enumerate(pitchnames)}
 
         # Use random noise to generate sequences
         noise = np.random.normal(0, 1, (1, self.latent_dim))
