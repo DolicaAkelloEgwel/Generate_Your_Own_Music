@@ -24,7 +24,13 @@ generate-your-own-music = { path = ".", editable = true }
 
 [tool.pixi.environments]
 default = { solve-group = "default" }
-dev = { features = ["dev"], solve-group = "default" }
+
+[tool.pixi.environments.dev]
+features = ["dev"]
+solve-group = "default"
+
+[tool.pixi.environments.dev.dependencies]
+pre-commit = ">=4.6.2,<5"
 
 [tool.pixi.tasks]
 
