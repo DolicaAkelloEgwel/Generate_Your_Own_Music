@@ -27,7 +27,15 @@ args.add_argument(
     "-o",
     "--output",
     required=True,
-    help="output filename for the generated midi file",
+    help="output filename without extension for the generated midi file(s)",
+)
+
+args.add_argument(
+    "-n",
+    "--number",
+    type=int,
+    default=1,
+    help="the number of files to generate",
 )
 
 args = args.parse_args()
@@ -66,7 +74,7 @@ def create_midi(prediction_output, filename):
         offset += 0.5
 
     midi_stream = stream.Stream(output_notes)
-    midi_stream.write("midi", fp=filename)
+    midi_stream.write("midi", fp=f"{filename}.mid")
 
 
 def generate_music(generator_model, latent_dim, n_vocab, pitch_names, length=500):
@@ -95,10 +103,15 @@ with open(f"{args.models}/meta.json", "r") as f:
 n_vocab = data["n-vocab"]
 pitch_names = set(data["pitch-names"])
 
-# Generate new music sequence
-generated_music = generate_music(
-    generator_model, args.latent_dimension, n_vocab, pitch_names
-)
-
-# Create a MIDI file from the generated music
-create_midi(generated_music, args.output)
+if args.number == 1:
+    generated_music = generate_music(
+        generator_model, args.latent_dimension, n_vocab, pitch_names
+    )
+    create_midi(generated_music, args.output)
+else:
+    digits = len(str(args.number))
+    for i in range(args.number):
+        generated_music = generate_music(
+            generator_model, args.latent_dimension, n_vocab, pitch_names
+        )
+        create_midi(generated_music, f"{args.output}-{i:0{digits}d}")
