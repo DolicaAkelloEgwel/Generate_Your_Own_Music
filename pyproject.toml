@@ -18,6 +18,9 @@ default = { solve-group = "default" }
 dev = { features = ["dev"], solve-group = "default" }
 
 [tool.pixi.tasks]
+train = { cmd = "python train.py" }
+generate = { cmd = "python generate.py" }
+play = { cmd = "python play.py" }
 
 [tool.pixi.dependencies]
 pygame = ">=2.6.1,<3"
