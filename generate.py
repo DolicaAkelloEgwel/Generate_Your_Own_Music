@@ -23,6 +23,13 @@ args.add_argument(
     default=LATENT_DIMENSION,
 )
 
+args.add_argument(
+    "-o",
+    "--output",
+    required=True,
+    help="output filename for the generated midi file",
+)
+
 args = args.parse_args()
 
 instr = instrument.Violin()
@@ -59,7 +66,7 @@ def create_midi(prediction_output, filename):
         offset += 0.5
 
     midi_stream = stream.Stream(output_notes)
-    midi_stream.write("midi", fp=f"{filename}.mid")
+    midi_stream.write("midi", fp=filename)
 
 
 def generate_music(generator_model, latent_dim, n_vocab, pitch_names, length=500):
@@ -94,4 +101,4 @@ generated_music = generate_music(
 )
 
 # Create a MIDI file from the generated music
-create_midi(generated_music, "generated_music")
+create_midi(generated_music, args.output)
