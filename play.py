@@ -1,4 +1,17 @@
+import argparse
+
 import pygame
+
+args = argparse.ArgumentParser()
+
+args.add_argument(
+    "-f",
+    "--file",
+    required=True,
+    help="path for the midi file to play",
+)
+
+args = args.parse_args()
 
 
 def play_midi(filename):
@@ -9,8 +22,5 @@ def play_midi(filename):
         pygame.time.Clock().tick(30)
 
 
-if __name__ == "__main__":
-    pygame.init()
-
-    midi_file_path = "generated_music.mid"
-    play_midi(midi_file_path)
+pygame.init()
+play_midi(args.file)
