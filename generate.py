@@ -1,5 +1,7 @@
 import argparse
 import json
+import os
+from pathlib import Path
 
 import numpy as np
 from music21 import chord, instrument, note, stream
@@ -102,6 +104,11 @@ with open(f"{args.models}/meta.json", "r") as f:
 
 n_vocab = data["n-vocab"]
 pitch_names = set(data["pitch-names"])
+
+p = Path(args.output)
+
+if not os.path.isdir(p.parent):
+    os.mkdir(p.parent)
 
 if args.number == 1:
     generated_music = generate_music(
