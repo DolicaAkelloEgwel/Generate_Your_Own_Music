@@ -1,13 +1,9 @@
-Data
-virtualEnv
+*.egg-info
+/models
 __pycache__
-generated_music.mid
-GAN_Loss_per_Epoch_final.png
-discriminator_model.h5
-gan_final.mid
-generator_model.h5
+*.png
+*.h5
+*.mid
 # pixi environments
 .pixi/*
 !.pixi/config.toml
-/generate_your_own_music.egg-info
-/models
