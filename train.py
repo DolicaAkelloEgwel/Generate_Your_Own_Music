@@ -42,6 +42,14 @@ args.add_argument(
     help="output path for the model files and metadata",
 )
 
+args.add_argument(
+    "-e",
+    "--epochs",
+    type=int,
+    default=EPOCHS,
+    help="number of epochs for training",
+)
+
 args = args.parse_args()
 
 
@@ -271,7 +279,7 @@ class GAN:
 
 
 gan = GAN(rows=SEQUENCE_LENGTH, input_path=args.input)
-gan.train(epochs=EPOCHS, batch_size=BATCH_SIZE, sample_interval=SAMPLE_INTERVAL)
+gan.train(epochs=args.epochs, batch_size=BATCH_SIZE, sample_interval=SAMPLE_INTERVAL)
 
 # Save the generator and discriminator models
 gan.generator.save(f"{args.output}/generator.h5")
