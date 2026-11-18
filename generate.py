@@ -16,6 +16,13 @@ args.add_argument(
     help="path to the folder containing the model files produced from the training",
 )
 
+args.add_argument(
+    "-ld",
+    "--latent-dimension",
+    type=int,
+    default=LATENT_DIMENSION,
+)
+
 args = args.parse_args()
 
 instr = instrument.Violin()
@@ -72,10 +79,10 @@ def generate_music(generator_model, latent_dim, n_vocab, pitch_names, length=500
 
 
 # Load the trained generator model
-generator_model = load_model(f"{args.model}/generator.h5")
+generator_model = load_model(f"{args.models}/generator.h5")
 
 # Load the processed notes and get the number of unique pitches
-with open(f"{args.model}/meta.json", "r") as f:
+with open(f"{args.models}/meta.json", "r") as f:
     data = json.load(f)
 
 n_vocab = data["n-vocab"]
@@ -83,7 +90,7 @@ pitch_names = set(data["pitch-names"])
 
 # Generate new music sequence
 generated_music = generate_music(
-    generator_model, LATENT_DIMENSION, n_vocab, pitch_names
+    generator_model, args.latent_dimension, n_vocab, pitch_names
 )
 
 # Create a MIDI file from the generated music
