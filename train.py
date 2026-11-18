@@ -50,6 +50,14 @@ args.add_argument(
     help="number of epochs for training",
 )
 
+args.add_argument(
+    "-bs",
+    "--batch-size",
+    type=int,
+    default=BATCH_SIZE,
+    help="the batch size for training",
+)
+
 args = args.parse_args()
 
 
@@ -279,7 +287,7 @@ class GAN:
 
 
 gan = GAN(rows=SEQUENCE_LENGTH, input_path=args.input)
-gan.train(epochs=args.epochs, batch_size=BATCH_SIZE, sample_interval=SAMPLE_INTERVAL)
+gan.train(epochs=args.epochs, batch_size=args.batch_size, sample_interval=SAMPLE_INTERVAL)
 
 # Save the generator and discriminator models
 gan.generator.save(f"{args.output}/generator.h5")
