@@ -58,6 +58,22 @@ args.add_argument(
     help="the batch size for training",
 )
 
+args.add_argument(
+    "-sl",
+    "--sequence-length",
+    type=int,
+    default=SEQUENCE_LENGTH,
+    help="the sequence length for training",
+)
+
+args.add_argument(
+    "-si",
+    "--sample-interval",
+    type=int,
+    default=SAMPLE_INTERVAL,
+    help="the sample interval for training",
+)
+
 args = args.parse_args()
 
 
@@ -286,8 +302,10 @@ class GAN:
         plt.close()
 
 
-gan = GAN(rows=SEQUENCE_LENGTH, input_path=args.input)
-gan.train(epochs=args.epochs, batch_size=args.batch_size, sample_interval=SAMPLE_INTERVAL)
+gan = GAN(rows=args.sequence_length, input_path=args.input)
+gan.train(
+    epochs=args.epochs, batch_size=args.batch_size, sample_interval=args.sample_interval
+)
 
 # Save the generator and discriminator models
 gan.generator.save(f"{args.output}/generator.h5")
