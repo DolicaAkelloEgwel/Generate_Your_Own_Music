@@ -14,7 +14,7 @@ args.add_argument(
 args = args.parse_args()
 
 
-def play_midi(filename):
+def play_midi(filename: str):
     pygame.mixer.init()
     pygame.mixer.music.load(filename)
     pygame.mixer.music.play()
