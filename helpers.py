@@ -3,13 +3,17 @@ from pathlib import Path
 from music21 import chord, converter, note
 
 
-def get_notes(path: str):
+def get_list_of_midi_files(path: str) -> list[str]:
+    return Path(path).glob("*.mid")
+
+
+def get_notes(path: str) -> list[str]:
     """Get all the notes and chords from the midi files"""
     notes = []
 
-    for file in Path(path).glob("*.mid"):
-        midi = converter.parse(file)
-        print(f"Parsing {file}")
+    for midi_file in get_list_of_midi_files(path):
+        midi = converter.parse(midi_file)
+        print(f"Parsing {midi_file}")
 
         notes_to_parse = midi.flat.notes
 
